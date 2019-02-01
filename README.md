@@ -1,2 +1,21 @@
 # lost-and-found-backend
-校园失物招领网站后台，flask
+
+## introduction
+
+失物招领
+
+## install
+```bash
+git clone https://github.com/zerolingchan/lost-and-found-backend.git
+mv config.py.example config.py
+vim config.py # setup variable
+# python3 -m venv venv # use virtual env
+# source venv/bin/active # active virtual env
+pip install -r requirements
+python run.py
+```
+
+## contribution
+- `config.py` all flask config 
+- `app/model` model direction
+- `app/route` route direction
