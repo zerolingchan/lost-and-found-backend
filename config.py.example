@@ -2,7 +2,10 @@ MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = ''
 MYSQL_PORT = '3306'
-MYSQL_DB = 'laf'
+MYSQL_DB = 'example'
 SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{user}:{password}@{host}:{port}/{db}".format(user=MYSQL_USER, password=MYSQL_PASSWORD, host=MYSQL_HOST, port=MYSQL_PORT, db=MYSQL_DB)
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+SECRET_KEY = ''
+WTF_CSRF_ENABLED = False
