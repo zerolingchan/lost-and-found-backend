@@ -9,14 +9,21 @@ class UserModel(db.Model, LoginMixin, CommonMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, comment='id')
-    name = db.Column(db.String(20), comment='user name')
+    login = db.Column(db.String(20), comment='user name')
+    nickname = db.Column(db.String(20), comment='user name')
     password = db.Column(db.String(128), comment='password')
     type = db.Column(ENUM('admin', 'user'), comment='user type')
     email = db.Column(db.String(20), comment='email')
+    comment_ids = db.relationship('CommentModel', backref='user')
 
     @classmethod
     def validate_login(cls, form):
-        user = UserModel.exist(name=form['name'], type=form['type'])
+        """
+        :type form: dict
+        :return: UserModel
+        :rtype: UserModel
+        """
+        user = UserModel.exist(login=form['login'], type=form['type'])
         if user is None:
             return None
         elif not check_password_hash(user.password, form['password'].encode()):
@@ -25,20 +32,33 @@ class UserModel(db.Model, LoginMixin, CommonMixin):
 
     @classmethod
     def register_user(cls, form):
-        if cls.exist(name=form['name']):
-            return None, '用户已经存在'
+        """
+        :type form: dict
+        :rtype: UserModel, str
+        """
+        if cls.exist(name=form['login']):
+            return None, 'user is already exist'
         if cls.exist(email=form['email']):
-            return None, '邮件已经被使用'
+            return None, 'email is already exist'
 
         user = cls()
-        user.name = form['name']
+        user.login = form['login']
+        user.nickname = form['nickname']
         user.email = form.get('email') or ''
         user.type = form['type']
         password = generate_password_hash(form['password'])
         user.password = password
         db.session.add(user)
         db.session.commit()
-        return user, '注册成功'
+        return user, 'register success'
+
+    def asdict(self):
+        return dict(
+            login=self.login,
+            nickname=self.nickname,
+            email=self.email,
+            type=self.type
+        )
 
 
 @login_manger.user_loader

@@ -16,3 +16,4 @@ from app.route import *
 
 
 app.register_blueprint(bp_user, url_prefix='/user')
+app.register_blueprint(bp_comment, url_prefix='/comment')

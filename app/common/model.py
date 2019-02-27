@@ -48,6 +48,11 @@ class CommonMixin:
         return ms
 
     @classmethod
-    def find_by(cls, **kwargs):
+    def find_one_by(cls, **kwargs):
         m = cls.query.filter_by(**kwargs).first()
+        return m
+
+    @classmethod
+    def find_by_id(cls, id):
+        m = cls.query.filter_by(id=id).first()
         return m
