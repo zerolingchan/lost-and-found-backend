@@ -12,7 +12,7 @@ class UserModel(db.Model, LoginMixin, CommonMixin):
     login = db.Column(db.String(20), comment='user name')
     nickname = db.Column(db.String(20), comment='user name')
     password = db.Column(db.String(128), comment='password')
-    type = db.Column(ENUM('admin', 'user'), comment='user type')
+    role = db.Column(ENUM('admin', 'user'), comment='user type')
     email = db.Column(db.String(20), comment='email')
     comment_ids = db.relationship('CommentModel', backref='user')
 
@@ -23,7 +23,7 @@ class UserModel(db.Model, LoginMixin, CommonMixin):
         :return: UserModel
         :rtype: UserModel
         """
-        user = UserModel.exist(login=form['login'], type=form['type'])
+        user = UserModel.exist(login=form['login'], role=form['role'])
         if user is None:
             return None
         elif not check_password_hash(user.password, form['password'].encode()):
@@ -45,7 +45,7 @@ class UserModel(db.Model, LoginMixin, CommonMixin):
         user.login = form['login']
         user.nickname = form['nickname']
         user.email = form.get('email') or ''
-        user.type = form['type']
+        user.role = form['role']
         password = generate_password_hash(form['password'])
         user.password = password
         db.session.add(user)

@@ -10,7 +10,7 @@ bp_user = Blueprint('user', __name__)
 @bp_user.route('/login', methods=['POST'])
 @json_response
 def login():
-    form = UserForm(request.form, csrf_enabled=False)
+    form = UserForm(request.form, meta=dict(csrf=False))
     if form.validate():
         user = UserModel.validate_login(request.form)
 
@@ -26,7 +26,7 @@ def login():
 @bp_user.route('/register', methods=['POST'])
 @json_response
 def register():
-    form = UserForm(request.form, csrf_enabled=False)
+    form = UserForm(request.form, meta=dict(csrf=False))
     if form.validate():
         user, msg = UserModel.register_user(request.form)
         if user:
