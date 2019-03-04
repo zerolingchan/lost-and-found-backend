@@ -6,6 +6,7 @@ from app import db
 
 
 bp_comment = Blueprint('comment', __name__)
+# todo 分页器
 
 
 @bp_comment.route('/<int:id>')

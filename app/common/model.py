@@ -9,6 +9,20 @@ class CommonMixin:
     created_time = db.Column(db.Float, default=time.time)
     updated_time = db.Column(db.Float, default=time.time)
 
+    def asdict(self, columns=None):
+        """
+        输出返回
+        :return:
+        :rtype: dict
+        """
+        d = {}
+        if columns is None:
+            columns = [column.name for column in self.__table__.columns
+                       if column.name not in ('deleted', 'created_time', 'updated_time')]
+        for column in columns:
+            d[column] = str(getattr(self, column))
+        return d
+
     def add_default_value(self):
         pass
 

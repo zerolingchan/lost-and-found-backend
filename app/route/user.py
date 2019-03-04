@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..bean.user import UserForm
+from app.forms import UserForm
 from app.model.user import UserModel
 from flask_login import login_user
 from app.common import json_response

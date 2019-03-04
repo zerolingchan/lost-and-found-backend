@@ -1,6 +1,6 @@
 from flask import jsonify
 from functools import wraps
-from flask import request, current_app
+from flask import current_app
 from flask_login import current_user
 
 
