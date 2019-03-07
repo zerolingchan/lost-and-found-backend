@@ -48,7 +48,7 @@ class CommonMixin:
 
     @classmethod
     def update(cls, id, **kwargs):
-        m = cls.find_by(id=id)
+        m = cls.find_by_id(id)
         for name, value in kwargs.items():
             setattr(m, name, value)
         m.updated_time = time.time()

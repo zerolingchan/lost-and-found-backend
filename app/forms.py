@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, AnyOf, Optional, Email
 
 
@@ -20,3 +20,8 @@ class UserForm(BaseForm):
 class PostForm(BaseForm):
     content = StringField('content', validators=[DataRequired()])
     type = StringField('post type', validators=[DataRequired(), AnyOf(['lost', 'found'])])
+
+
+class PaginationForm(BaseForm):
+    page = IntegerField('page num', validators=[Optional()], default=1)
+    per_page = IntegerField('per page num', validators=[Optional()], default=20)

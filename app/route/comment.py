@@ -3,17 +3,16 @@ from flask_login import login_required, current_user
 from app.model.comment import CommentModel
 from app.common.http import json_response
 from app import db
+from app.forms import PaginationForm
 
 
 bp_comment = Blueprint('comment', __name__)
-# todo 分页器
 
 
 @bp_comment.route('/<int:id>')
-@login_required
 @json_response
 def get(id):
-    comment = CommentModel.find_one_by(id=id, user_id=current_user.id)
+    comment = CommentModel.find_one_by(id=id)
     if comment:
         return dict(code=200, msg='success', data=comment.asdict())
     else:
@@ -21,14 +20,25 @@ def get(id):
 
 
 @bp_comment.route('/all')
-@login_required
 @json_response
 def comments():
-    comments = current_user.comment_ids
+    """
+    获得所有留言
+    :return:
+    """
+    paginate_form = PaginationForm(request.values)
+    pagination = CommentModel.query.paginate(**paginate_form.form)
+
     return dict(
         code=200,
         msg='success',
-        data=[_.asdict() for _ in comments]
+        data=dict(
+            data=[_.asdict() for _ in pagination.items],
+            current_page=pagination.page,
+            current_num=len(pagination.items),
+            total_page=pagination.pages,
+            total_num=pagination.total
+        )
     )
 
 

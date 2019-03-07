@@ -2,16 +2,14 @@ from flask import request, Blueprint
 from flask_login import login_required, current_user
 from app.model.post import PostModel
 from app.common.http import json_response
-from app import db
 from app.permission import permission_required, Role
-from app.forms import PostForm
+from app.forms import PostForm, PaginationForm
 
 
 bp_post = Blueprint('post', __name__)
 
 
 # todo 分页器
-# todo 区分不同类型post
 
 @bp_post.route('/<int:id>')
 @json_response
@@ -24,15 +22,27 @@ def get(id):
 
 
 @bp_post.route('/all')
-@login_required
-@permission_required(Role.user)
 @json_response
 def all():
-    posts = PostModel.find_all()
+    query = PostModel.query.filter_by(deleted=False)
+    type = request.values.get('type')
+    if type:
+        query = query.filter_by(type=type)
+
+    pagination_form = PaginationForm(request.values)
+    pagination = query.paginate(**pagination_form.form)
+
+    posts = pagination.items
     return dict(
         code=200,
         msg='success',
-        data=[_.asdict() for _ in posts]
+        data=dict(
+            posts=[_.asdict() for _ in posts],
+            current_page=pagination.page,
+            current_num=len(posts),
+            total_page=pagination.pages,
+            total_num=pagination.total
+        )
     )
 
 
@@ -54,8 +64,7 @@ def create():
 def delete(id):
     m = PostModel.find_one_by(id=id, user_id=current_user.id)
     if m:
-        db.session.delete(m)
-        db.session.commit()
+        PostModel.delete(m.id)
         return dict(code=200, msg='success', data=None)
     else:
         return dict(code=404, msg='not found', data=None)
