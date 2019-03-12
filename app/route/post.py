@@ -1,15 +1,14 @@
-from flask import request, Blueprint
+from flask import request, Blueprint, url_for
 from flask_login import login_required, current_user
 from app.model.post import PostModel
 from app.common.http import json_response
 from app.permission import permission_required, Role
 from app.forms import PostForm, PaginationForm
+from app import uploader
 
 
 bp_post = Blueprint('post', __name__)
 
-
-# todo 分页器
 
 @bp_post.route('/<int:id>')
 @json_response

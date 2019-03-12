@@ -20,7 +20,7 @@ class CommonMixin:
             columns = [column.name for column in self.__table__.columns
                        if column.name not in ('deleted', 'created_time', 'updated_time')]
         for column in columns:
-            d[column] = str(getattr(self, column))
+            d[column] = getattr(self, column)
         return d
 
     def add_default_value(self):

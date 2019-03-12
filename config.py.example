@@ -9,3 +9,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 SECRET_KEY = ''
 WTF_CSRF_ENABLED = False
+
+import pathlib
+UPLOADS_DEFAULT_DEST = pathlib.Path(__file__).parent / 'web'

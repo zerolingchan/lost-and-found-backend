@@ -2,13 +2,23 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_uploads import IMAGES, UploadSet, configure_uploads
+import pathlib
 
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='',
+            static_folder=pathlib.Path(__file__).parents[1] / 'web')
 app.config.from_pyfile('../config.py')
+
 login_manger = LoginManager(app)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# flask-uploads
+uploader = UploadSet('uploads', IMAGES)
+configure_uploads(app, uploader)
 
 
 from app.model import *
