@@ -1,5 +1,5 @@
 from app import db
-from app.common.model import CommonMixin
+from app.util import CommonMixin
 
 
 class CommentModel(db.Model, CommonMixin):

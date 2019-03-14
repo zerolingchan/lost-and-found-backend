@@ -1,5 +1,5 @@
 from app import db
-from app.common.model import CommonMixin
+from app.util import CommonMixin
 
 
 class Attendance(db.Model, CommonMixin):

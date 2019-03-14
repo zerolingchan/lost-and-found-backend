@@ -1,5 +1,5 @@
 from app import db
-from app.common.model import CommonMixin
+from app.util import CommonMixin
 from sqlalchemy.dialects.mysql import ENUM
 
 
@@ -17,5 +17,6 @@ class PostModel(db.Model, CommonMixin):
 
     def asdict(self, columns=None):
         if columns is None:
-            columns = ['id', 'content', 'type', 'attendance_ids']
+            columns = ['id', 'content', 'type', 'attendance_ids.path']
         return super().asdict(columns)
+

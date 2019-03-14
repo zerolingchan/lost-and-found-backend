@@ -2,7 +2,7 @@ from app import db, login_manger
 from flask_login import UserMixin as LoginMixin
 from sqlalchemy.dialects.mysql import ENUM
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.common.model import CommonMixin
+from app.util import CommonMixin
 
 
 class UserModel(LoginMixin, db.Model, CommonMixin):

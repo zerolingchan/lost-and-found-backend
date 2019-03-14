@@ -1,11 +1,14 @@
-from flask import request, Blueprint, url_for
+from flask import request, Blueprint
 from flask_login import login_required, current_user
-from app.model.post import PostModel
-from app.common.http import json_response
-from app.permission import permission_required, Role
-from app.forms import PostForm, PaginationForm
-from app import uploader
+from flask_uploads import UploadNotAllowed
 
+from app import uploader, db
+from app.forms import PostForm, PaginationForm
+from app.model import Attendance, PostModel
+from app.util import json_response, hash_filename
+
+import os
+import pathlib
 
 bp_post = Blueprint('post', __name__)
 
@@ -51,8 +54,32 @@ def all():
 def create():
     form = PostForm(request.form, meta=dict(csrf=False))
     if form.validate():
-        m = PostModel.new(**form.form, user_id=current_user.id)
-        return dict(code=200, msg='success', data=m)
+        attendances = []
+        try:
+            m = PostModel.new(**form.form, user_id=current_user.id, commit=False)
+            db.session.add(m)
+            db.session.flush()
+
+            # save attendance
+            for _, file in request.files.items():
+                filename = hash_filename(file.filename)
+                if not uploader.file_allowed(file, filename):
+                    raise UploadNotAllowed('file type not allow')
+                path = uploader.save(storage=file, folder=str(m.id), name=filename)
+                attendances.append(path)
+                url = uploader.url(path)
+                attendance = Attendance.new(commit=False, pid=m.id, path=url)
+                db.session.add(attendance)
+
+            db.session.commit()
+
+            return dict(code=200, msg='success', data=m.asdict())
+        except Exception as e:
+            db.session.rollback()
+            # 删除无用附件
+            for path in attendances:
+                os.remove(pathlib.Path(uploader.config.destination) / path)
+            return dict(code=500, msg=str(e), data=None)
     else:
         return form.errors
 

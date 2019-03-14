@@ -12,3 +12,5 @@ WTF_CSRF_ENABLED = False
 
 import pathlib
 UPLOADS_DEFAULT_DEST = pathlib.Path(__file__).parent / 'web'
+UPLOADS_DEFAULT_URL = '/web'
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024

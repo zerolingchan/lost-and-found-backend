@@ -7,7 +7,6 @@ import pathlib
 
 
 app = Flask(__name__,
-            static_url_path='',
             static_folder=pathlib.Path(__file__).parents[1] / 'web')
 app.config.from_pyfile('../config.py')
 

@@ -1,7 +1,7 @@
 from flask import request, Blueprint,jsonify
 from flask_login import login_required, current_user
 from app.model.comment import CommentModel
-from app.common.http import json_response
+from app.util import json_response
 from app import db
 from app.forms import PaginationForm
 
