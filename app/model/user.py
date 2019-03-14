@@ -37,7 +37,7 @@ class UserModel(LoginMixin, db.Model, CommonMixin):
         :type form: dict
         :rtype: UserModel, str
         """
-        if cls.exist(name=form['login']):
+        if cls.exist(login=form['login']):
             return None, 'user is already exist'
         if cls.exist(email=form['email']):
             return None, 'email is already exist'
