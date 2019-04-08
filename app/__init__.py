@@ -28,16 +28,12 @@ from app.route import *
 
 
 app.register_blueprint(bp_user, url_prefix='/user')
-app.register_blueprint(bp_comment, url_prefix='/comment')
-app.register_blueprint(bp_post, url_prefix='/post')
+
+api.add_resource(Comments, '/comment')
+api.add_resource(Comment, '/comment/<int:cid>')
+
+api.add_resource(Posts, '/post')
+api.add_resource(Post, '/post/<int:pid>')
 
 api.add_resource(Notices, '/notice')
 api.add_resource(Notice, '/notice/<int:nid>')
-
-
-from flask_restful import Resource
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
-
-api.add_resource(HelloWorld, '/test')

@@ -7,12 +7,13 @@
 #    LastChange: 2019-04-08 21:10
 #       History: 
 # =============================================================================
-from flask import request, abort
+from flask import request
+from flask_login import login_required, current_user
 from flask_restful import Resource
 
+from app.forms import NoticeForm
 from app.model import NoticeModel
 from app.permission import permission_required, Role
-from app.forms import NoticeForm
 
 
 class Notices(Resource):
@@ -37,4 +38,23 @@ class Notice(Resource):
             return dict(code=404, msg='not found', data=None)
         else:
             return dict(code=200, msg='success', data=model.asdict())
+
+    @login_required
+    def delete(self, nid):
+        m = NoticeModel.find_one_by(id=nid, user_id=current_user.id)
+        if m:
+            NoticeModel.delete(m.id)
+            return dict(code=200, msg='success', data=None)
+        else:
+            return dict(code=404, msg='not found', data=None)
+
+    @login_required
+    def put(self, nid):
+        comment = NoticeModel.find_one_by(id=nid)
+        if comment:
+            content = request.form['content']
+            m = comment.update(comment.id, user_id=current_user.id, content=content)
+            return dict(code=200, msg='success', data=comment.asdict())
+        else:
+            return dict(code=404, msg='not found', data=None)
 

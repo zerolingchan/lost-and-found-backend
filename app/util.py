@@ -96,19 +96,18 @@ class CommonMixin:
 
     @classmethod
     def delete(cls, id, commit=True):
-        m = cls.update(id, commit, deleted=True)
+        m = cls.find_by_id(id)
+        m = m.update(id, commit, deleted=True)
         return m
 
-    @classmethod
-    def update(cls, id, commit=True, **kwargs):
-        m = cls.find_by_id(id)
+    def update(self, id, commit=True, **kwargs):
         for name, value in kwargs.items():
-            setattr(m, name, value)
-        m.updated_time = time.time()
+            setattr(self, name, value)
+        self.updated_time = time.time()
         if commit:
-            db.session.add(m)
+            db.session.add(self)
             db.session.commit()
-        return m
+        return self
 
     @classmethod
     def find_all(cls, **kwargs):
