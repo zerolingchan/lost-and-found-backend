@@ -1,7 +1,7 @@
 from enum import Enum
-from flask_login import current_user
+from flask_login import current_user, login_required
 from functools import wraps
-from flask import abort
+from flask import jsonify
 
 
 class Role(Enum):
@@ -17,8 +17,9 @@ def permission_required(permission=Role.user):
         @wraps(f)
         def wrapper(*args, **kwargs):
             # 如果权限级别不够
-            if Role[current_user.role] < permission:
-                return abort(403)
-            return f(*args, **kwargs)
+            print(current_user.is_authenticated, current_user)
+            if current_user.is_authenticated and Role[current_user.role] >= permission:
+                return f(*args, **kwargs)
+            return jsonify(dict(code=401, msg='unauthorized', data=None))
         return wrapper
     return decorate_func

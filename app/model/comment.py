@@ -11,5 +11,5 @@ class CommentModel(db.Model, CommonMixin):
 
     def asdict(self, columns=None):
         if columns is None:
-            columns = ['id', 'content']
+            columns = ['id', 'title', 'content', 'updated_time']
         return super().asdict(columns)

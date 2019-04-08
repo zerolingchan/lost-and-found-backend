@@ -25,3 +25,8 @@ class PostForm(BaseForm):
 class PaginationForm(BaseForm):
     page = IntegerField('page num', validators=[Optional()], default=1)
     per_page = IntegerField('per page num', validators=[Optional()], default=20)
+
+
+class NoticeForm(BaseForm):
+    title = StringField('title', validators=[DataRequired()])
+    content = StringField('content', validators=[DataRequired()])
