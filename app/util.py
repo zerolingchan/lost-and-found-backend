@@ -55,8 +55,8 @@ def rgetattr(obj, attr, *args):
 class CommonMixin:
     id = db.Column(db.Integer, primary_key=True)
     deleted = db.Column(db.Boolean, nullable=False, default=False)
-    created_time = db.Column(db.Float, default=time.time)
-    updated_time = db.Column(db.Float, default=time.time)
+    created_time = db.Column(db.Integer, default=lambda: int(time.time()))
+    updated_time = db.Column(db.Integer, default=lambda: int(time.time()))
 
     def asdict(self, columns=None):
         """

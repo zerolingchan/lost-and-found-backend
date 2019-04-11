@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from app.forms import UserForm
 from app.model.user import UserModel
 from flask_login import login_user
 from app.util import json_response
+from app import login_manger
 
 bp_user = Blueprint('user', __name__)
 
@@ -35,3 +36,9 @@ def register():
             return dict(code=201, msg=msg, data=None)
     else:
         return form.errors
+
+
+@login_manger.unauthorized_handler
+def unauthorized():
+    response = make_response(jsonify(code=401, msg='unauthorized', data=None), 401)
+    return response

@@ -18,6 +18,7 @@ from app.permission import permission_required, Role
 
 class Notices(Resource):
     def get(self):
+        # tips 没有分页操作，默认公告不多的情况下
         model = NoticeModel.find_all()
         return dict(code=200, msg='success', data=[_.asdict() for _ in model])
 

@@ -45,11 +45,14 @@ class Comment(Resource):
 
     @login_required
     def delete(self, cid):
-        m = CommentModel.find_one_by(id=cid, user_id=current_user.id)
+        m = CommentModel.find_one_by(id=cid)
         if m:
-            db.session.delete(m)
-            db.session.commit()
-            return dict(code=200, msg='success', data=None)
+            if m.user_id == current_user.id or current_user.role == 'admin':
+                db.session.delete(m)
+                db.session.commit()
+                return dict(code=200, msg='success', data=None)
+            else:
+                return dict(code=403, msg="Permission denied", data=None)
         else:
             return dict(code=404, msg='not found', data=None)
 
