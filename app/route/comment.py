@@ -6,8 +6,6 @@ from app import db
 from app.forms import PaginationForm
 from app.model.comment import CommentModel
 
-bp_comment = Blueprint('comment', __name__)
-
 
 class Comments(Resource):
     def get(self):

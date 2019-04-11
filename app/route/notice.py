@@ -54,7 +54,7 @@ class Notice(Resource):
         if comment:
             content = request.form['content']
             m = comment.update(comment.id, user_id=current_user.id, content=content)
-            return dict(code=200, msg='success', data=comment.asdict())
+            return dict(code=200, msg='success', data=m.asdict())
         else:
             return dict(code=404, msg='not found', data=None)
 

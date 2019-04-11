@@ -69,10 +69,7 @@ class CommonMixin:
             columns = [column.name for column in self.__table__.columns
                        if column.name not in ('deleted', 'created_time', 'updated_time')]
         for column in columns:
-            attr = rgetattr(self, column)
-            if isinstance(attr, db.Model):
-                attr = attr.asdict()
-            d[column] = attr
+            d[column.split('.')[-1]] = rgetattr(self, column)
         return d
 
     def add_default_value(self):
