@@ -19,12 +19,16 @@ class UserForm(BaseForm):
 
 class PostForm(BaseForm):
     content = StringField('content', validators=[DataRequired()])
-    type = StringField('post type', validators=[DataRequired(), AnyOf(['lost', 'found'])])
+    type = StringField('post type', validators=[DataRequired(), AnyOf(['lost', 'found', 'people'])])
 
 
 class PaginationForm(BaseForm):
     page = IntegerField('page num', validators=[Optional()], default=1)
     per_page = IntegerField('per page num', validators=[Optional()], default=20)
+
+
+class CommentForm(PaginationForm):
+    post_id = IntegerField('post id', validators=[DataRequired()])
 
 
 class NoticeForm(BaseForm):

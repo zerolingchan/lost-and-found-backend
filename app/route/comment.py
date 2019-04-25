@@ -1,9 +1,10 @@
 from flask import request, Blueprint
 from flask_login import current_user, login_required
 from flask_restful import Resource
+from flask_sqlalchemy import BaseQuery
 
 from app import db
-from app.forms import PaginationForm
+from app.forms import CommentForm
 from app.model.comment import CommentModel
 
 
@@ -13,8 +14,11 @@ class Comments(Resource):
         获得所有留言
         :return:
         """
-        paginate_form = PaginationForm(request.values)
-        pagination = CommentModel.query.paginate(**paginate_form.form)
+        post_id = request.values.get('pid')
+        form = CommentForm(request.values)
+
+        query: BaseQuery = CommentModel.query.filter_by(post_id=post_id)
+        pagination = query.paginate(page=form.page.name, per_page=form.per_page.data)
 
         return dict(
             code=200,

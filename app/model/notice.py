@@ -3,7 +3,7 @@ from app.util import CommonMixin
 
 
 class NoticeModel(db.Model, CommonMixin):
-    __tablename__ = 'notice'
+    __tablename__ = 'notices'
 
     id = db.Column(db.Integer, primary_key=True, comment='id')
     title = db.Column(db.String(20), nullable=False)

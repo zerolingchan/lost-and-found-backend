@@ -40,5 +40,5 @@ def register():
 
 @login_manger.unauthorized_handler
 def unauthorized():
-    response = make_response(jsonify(code=401, msg='unauthorized', data=None), 401)
+    response = make_response(jsonify(code=40100, msg='unauthorized', data=None), 401)
     return response
