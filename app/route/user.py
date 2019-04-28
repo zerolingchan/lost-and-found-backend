@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from app.forms import UserForm
+from app.forms import LoginForm, RegisterForm
 from app.model.user import UserModel
 from flask_login import login_user
 from app.util import json_response
@@ -11,7 +11,7 @@ bp_user = Blueprint('user', __name__)
 @bp_user.route('/login', methods=['POST'])
 @json_response
 def login():
-    form = UserForm(request.form, meta=dict(csrf=False))
+    form = LoginForm(request.form, meta=dict(csrf=False))
     if form.validate():
         user = UserModel.validate_login(request.form)
 
@@ -27,9 +27,9 @@ def login():
 @bp_user.route('/register', methods=['POST'])
 @json_response
 def register():
-    form = UserForm(request.form, meta=dict(csrf=False))
+    form = RegisterForm(request.form, meta=dict(csrf=False))
     if form.validate():
-        user, msg = UserModel.register_user(request.form)
+        user, msg = UserModel.register_user(form.form)
         if user:
             return dict(code=200, msg=msg, data=user.asdict())
         else:

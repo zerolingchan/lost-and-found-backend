@@ -9,11 +9,16 @@ class BaseForm(FlaskForm):
         return dict((name, field.data) for name, field in self._fields.items())
 
 
-class UserForm(BaseForm):
+class LoginForm(BaseForm):
+    login = StringField('login', validators=[DataRequired('昵称不能为空')])
+    password = StringField('password', validators=[DataRequired(message='密码不能为空')])
+    role = StringField('login type', validators=[DataRequired('类型不能为空'), AnyOf(['admin', 'user'], message='登陆类型不正确')])
+
+
+class RegisterForm(BaseForm):
     login = StringField('login', validators=[DataRequired('昵称不能为空')])
     password = StringField('password', validators=[DataRequired(message='密码不能为空')])
     nickname = StringField('nickname', validators=[Optional()])
-    role = StringField('login type', validators=[DataRequired('类型不能为空'), AnyOf(['admin', 'user'], message='登陆类型不正确')])
     email = StringField('email', validators=[Optional(), Email()])
 
 

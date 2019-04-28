@@ -46,7 +46,7 @@ class UserModel(LoginMixin, db.Model, CommonMixin):
         user.login = form['login']
         user.nickname = form['nickname']
         user.email = form.get('email') or ''
-        user.role = form['role']
+        user.role = 'user'  # 接口只能注册user类型
         password = generate_password_hash(form['password'])
         user.password = password
         db.session.add(user)
