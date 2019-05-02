@@ -6,10 +6,25 @@ from flask_uploads import IMAGES, UploadSet, configure_uploads
 from flask_restful import Api
 import pathlib
 
-
 app = Flask(__name__,
             static_folder=pathlib.Path(__file__).parents[1] / 'web')
 app.config.from_pyfile('../config.py')
+
+
+access_control_allow_origin = [
+    # 'http://localhost:8080',
+    'https://zerolingchan.github.io'
+    # 'https://zerolingchan.github.io/lost-and-found-fronten',
+]
+
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', ','.join(access_control_allow_origin))
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  response.headers.add('Access-Control-Allow-Credentials', 'true')
+  return response
+
 
 login_manger = LoginManager(app)
 

@@ -8,11 +8,11 @@ from app.util import CommonMixin
 class UserModel(LoginMixin, db.Model, CommonMixin):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True, comment='id')
-    login = db.Column(db.String(20), comment='user name')
-    nickname = db.Column(db.String(20), comment='user name')
-    password = db.Column(db.String(128), comment='password')
-    role = db.Column(ENUM('admin', 'user'), nullable=False, comment='user type')
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    login = db.Column(db.String(20), comment='账号ID')
+    nickname = db.Column(db.String(20), comment='昵称')
+    password = db.Column(db.String(128), comment='密码')
+    role = db.Column(ENUM('admin', 'user'), nullable=False, comment='用户类型')
     email = db.Column(db.String(20), comment='email')
     comment_ids = db.relationship('CommentModel', backref='user')
     post_ids = db.relationship('PostModel', backref='user')

@@ -1,6 +1,7 @@
 import os
 import pathlib
 
+from werkzeug.datastructures import ImmutableMultiDict
 from flask import request
 from flask_login import login_required, current_user
 from flask_restful import Resource
@@ -37,7 +38,7 @@ class Posts(Resource):
 
     @login_required
     def post(self):
-        form = PostForm(request.form, meta=dict(csrf=False))
+        form = PostForm(ImmutableMultiDict(request.json), meta=dict(csrf=False))
         if form.validate():
             attendances = []
             try:

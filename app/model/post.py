@@ -13,13 +13,13 @@ class PostModel(db.Model, CommonMixin):
     type = db.Column(ENUM('lost', 'found', 'people'), comment='文章类型')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, comment='用户ID')  # tourists also can post
     contact = db.Column(db.String(20), comment='联系人')
-    phone = db.Column(db.String(20))
+    phone = db.Column(db.String(20), comment='手机号')
     content = db.Column(db.Text, comment='留言内容')
     comment_ids = db.relationship('CommentModel', backref='post')
     attendance_ids = db.relationship('Attendance', backref='post')
 
     def asdict(self, columns=None):
         if columns is None:
-            columns = ['id', 'content', 'type', 'attendance_ids.path']
+            columns = ['id', 'content', 'type', 'contact', 'phone', 'attendance_ids.path']
         return super().asdict(columns)
 

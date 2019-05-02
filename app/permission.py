@@ -18,7 +18,7 @@ def permission_required(permission=Role.user):
         def wrapper(*args, **kwargs):
             # 如果权限级别不够
             print(current_user.is_authenticated, current_user)
-            if current_user.is_authenticated and Role[current_user.role] >= permission:
+            if current_user.is_authenticated and Role[current_user.role].value >= permission.value:
                 return f(*args, **kwargs)
             return jsonify(dict(code=401, msg='unauthorized', data=None))
         return wrapper
