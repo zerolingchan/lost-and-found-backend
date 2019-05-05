@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField
+from wtforms import StringField, IntegerField, FileField
 from wtforms.validators import DataRequired, AnyOf, Optional, Email
 
 
@@ -23,8 +23,12 @@ class RegisterForm(BaseForm):
 
 
 class PostForm(BaseForm):
-    content = StringField('content', validators=[DataRequired()])
     type = StringField('post type', validators=[DataRequired(), AnyOf(['lost', 'found', 'people'])])
+    title = StringField('title', validators=[DataRequired()])
+    content = StringField('content', validators=[DataRequired()])
+    contact = StringField('contact', validators=[DataRequired()])
+    phone = StringField('phone', validators=[DataRequired()])
+    image = FileField('image', validators=[Optional()])
 
 
 class PaginationForm(BaseForm):

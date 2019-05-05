@@ -97,7 +97,7 @@ class CommonMixin:
         m = m.update(id, commit, deleted=True)
         return m
 
-    def update(self, id, commit=True, **kwargs):
+    def update(self, commit=True, **kwargs):
         for name, value in kwargs.items():
             setattr(self, name, value)
         self.updated_time = time.time()

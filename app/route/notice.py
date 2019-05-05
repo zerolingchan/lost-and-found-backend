@@ -7,14 +7,12 @@
 #    LastChange: 2019-04-08 21:10
 #       History: 
 # =============================================================================
-from flask import request
 from flask_login import login_required, current_user
 from flask_restful import Resource
 
 from app.forms import NoticeForm
 from app.model import NoticeModel
 from app.permission import permission_required, Role
-from werkzeug.datastructures import ImmutableMultiDict
 
 
 class Notices(Resource):
@@ -25,7 +23,7 @@ class Notices(Resource):
 
     @permission_required(Role.admin)
     def post(self):
-        form = NoticeForm(ImmutableMultiDict(request.json), meta=dict(csrf=False))
+        form = NoticeForm(meta=dict(csrf=False))
         if form.validate():
             m = NoticeModel.new(**form.form)
             return dict(code=200, msg='success', data=m.asdict())
@@ -54,11 +52,9 @@ class Notice(Resource):
     def put(self, nid):
         notice = NoticeModel.find_one_by(id=nid)
         if notice:
-            form = ImmutableMultiDict(request.json)
-            form = NoticeForm(form, meta=dict(csrf=False))
+            form = NoticeForm(meta=dict(csrf=False))
 
-            m = notice.update(notice.id, 
-            user_id=current_user.id, **form.form)
+            m = notice.update(user_id=current_user.id, **form.form)
             return dict(code=200, msg='success', data=m.asdict())
         else:
             return dict(code=404, msg='not found', data=None)

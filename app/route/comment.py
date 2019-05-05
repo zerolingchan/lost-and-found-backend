@@ -15,7 +15,7 @@ class Comments(Resource):
         :return:
         """
         post_id = request.values.get('pid')
-        form = CommentForm(request.values)
+        form = CommentForm(meta=dict(csrf=False))
 
         query: BaseQuery = CommentModel.query.filter_by(post_id=post_id)
         pagination = query.paginate(page=form.page.name, per_page=form.per_page.data)
@@ -25,10 +25,12 @@ class Comments(Resource):
             msg='success',
             data=dict(
                 data=[_.asdict() for _ in pagination.items],
-                current_page=pagination.page,
-                current_num=len(pagination.items),
-                total_page=pagination.pages,
-                total_num=pagination.total
+                pagination=dict(
+                    current_page=pagination.page,
+                    current_num=len(pagination.items),
+                    total_page=pagination.pages,
+                    total_num=pagination.total
+                )
             )
         )
 
