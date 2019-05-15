@@ -17,9 +17,14 @@ class UserModel(LoginMixin, db.Model, CommonMixin):
     comment_ids = db.relationship('CommentModel', backref='user')
     post_ids = db.relationship('PostModel', backref='user')
 
+    def check(self, password):
+        """密码验证"""
+        return check_password_hash(self.password, password.encode())
+
     @classmethod
     def validate_login(cls, form):
         """
+        验证登陆
         :type form: dict
         :return: UserModel
         :rtype: UserModel
@@ -27,13 +32,14 @@ class UserModel(LoginMixin, db.Model, CommonMixin):
         user = UserModel.exist(login=form['login'], role=form['role'])
         if user is None:
             return None
-        elif not check_password_hash(user.password, form['password'].encode()):
+        elif not user.check(form['password']):
             return None
         return user
 
     @classmethod
     def register_user(cls, form):
         """
+        注册用户
         :type form: dict
         :rtype: UserModel, str
         """

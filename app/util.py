@@ -1,4 +1,5 @@
 from flask import jsonify
+from flask_sqlalchemy import BaseQuery
 from functools import wraps
 from flask import current_app
 from flask_login import current_user
@@ -58,6 +59,11 @@ class CommonMixin:
     created_time = db.Column(db.Integer, default=lambda: int(time.time()))
     updated_time = db.Column(db.Integer, default=lambda: int(time.time()))
 
+    @classmethod
+    def get_query(cls) -> BaseQuery:
+        """返回过滤已删除项的查询对象"""
+        return cls.query.filter_by(deleted=False)
+
     def asdict(self, columns=None):
         """
         输出返回
@@ -94,7 +100,7 @@ class CommonMixin:
     @classmethod
     def delete(cls, id, commit=True):
         m = cls.find_by_id(id)
-        m = m.update(id, commit, deleted=True)
+        m = m.update(commit, deleted=True)
         return m
 
     def update(self, commit=True, **kwargs):

@@ -22,6 +22,20 @@ class RegisterForm(BaseForm):
     email = StringField('email', validators=[Optional(), Email()])
 
 
+class UserForm(BaseForm):
+    """用户修改用户资料"""
+    nickname = StringField('nickname', validators=[Optional()])
+
+
+class PasswordChangeForm(BaseForm):
+    old_password = StringField('old_password', validators=[DataRequired('old password is not null')])
+    new_password = StringField('new_password', validators=[DataRequired('new password is not null')])
+
+
+class SearchForm(BaseForm):
+    word = StringField('word', validators=[DataRequired()])
+
+
 class PostForm(BaseForm):
     type = StringField('post type', validators=[DataRequired(), AnyOf(['lost', 'found', 'people'])])
     title = StringField('title', validators=[DataRequired()])

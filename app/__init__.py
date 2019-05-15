@@ -43,6 +43,7 @@ from app.route import *
 
 
 app.register_blueprint(bp_user, url_prefix='/user')
+api.add_resource(User, '/user/<int:uid>')
 
 api.add_resource(Comments, '/comment')
 api.add_resource(Comment, '/comment/<int:cid>')
@@ -52,3 +53,4 @@ api.add_resource(Post, '/post/<int:pid>')
 
 api.add_resource(Notices, '/notice')
 api.add_resource(Notice, '/notice/<int:nid>')
+api.add_resource(Search, '/search')

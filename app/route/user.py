@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify, make_response
-from flask_login import login_user
+from flask_login import login_user, login_required, current_user
+from werkzeug.security import generate_password_hash
 
 from app import login_manger
-from app.forms import LoginForm, RegisterForm, PaginationForm
+from app.forms import LoginForm, RegisterForm, PaginationForm, PasswordChangeForm, UserForm
 from app.model.user import UserModel
 from app.permission import permission_required, Role
 from app.util import json_response
+from flask_restful import Resource
 
 bp_user = Blueprint('user', __name__)
 
@@ -66,23 +68,56 @@ def get_user():
     )
 
 
-@bp_user.route('/<int:id>', methods=['DELETE'])
-@permission_required(Role.admin)
+
+
+@bp_user.route('/password/reset', methods=['POST'])
+def password_reset():
+    """重置密码"""
+
+
+@bp_user.route('/password/change', methods=['POST'])
+@login_required
 @json_response
-def delete_user(id):
-    """
-    删除用户
-    :return:
-    """
-    users = UserModel.find_by_id(id)
-    if not users:
-        return dict(code=404, msg='not found', data=None)
+def password_change():
+    """修改密码"""
+    form = PasswordChangeForm(meta=dict(csrf=False))
+    if form.validate():
+        if current_user.check(form.old_password.data):
+            current_user.update(password=generate_password_hash(form.new_password.data))
+            return dict(code=200, msg='success', data=None)
+        else:
+            return dict(code=40101, msg='密码错误', data=None)
     else:
-        UserModel.delete(id)
-        return dict(code=200, msg='success', data=None)
+        return dict(code=400, msg='bad request', data=form.errors)
 
 
 @login_manger.unauthorized_handler
 def unauthorized():
     response = make_response(jsonify(code=40100, msg='unauthorized', data=None), 401)
     return response
+
+
+class User(Resource):
+    @permission_required(Role.admin)
+    @json_response
+    def delete(self, uid):
+        """
+        删除用户
+        :return:
+        """
+        users = UserModel.find_by_id(uid)
+        if not users:
+            return dict(code=404, msg='not found', data=None)
+        else:
+            UserModel.delete(uid)
+            return dict(code=200, msg='success', data=None)
+
+    @login_required
+    def put(self, uid):
+        """更新用户资料"""
+        assert current_user.id == uid  # 断言判断当前用户是本人，十分懒人的处理了，哈哈
+
+        form = UserForm()
+        user = UserModel.find_by_id(uid)
+        user.update(**form.form)
+        return dict(code=200, msg='success', data=user.asdict())
