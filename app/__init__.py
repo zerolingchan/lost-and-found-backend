@@ -50,7 +50,9 @@ api.add_resource(Comment, '/comment/<int:cid>')
 
 api.add_resource(Posts, '/post')
 api.add_resource(Post, '/post/<int:pid>')
+api.add_resource(Search, '/search')
 
 api.add_resource(Notices, '/notice')
 api.add_resource(Notice, '/notice/<int:nid>')
-api.add_resource(Search, '/search')
+
+api.add_resource(Like, '/like/<int:pid>')

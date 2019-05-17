@@ -57,3 +57,8 @@ class CommentForm(PaginationForm):
 class NoticeForm(BaseForm):
     title = StringField('title', validators=[DataRequired()])
     content = StringField('content', validators=[DataRequired()])
+
+
+class LikeForm(BaseForm):
+    pid = IntegerField('post id', validators=[DataRequired()])
+
