@@ -49,6 +49,7 @@ api.add_resource(Comments, '/comment')
 api.add_resource(Comment, '/comment/<int:cid>')
 
 api.add_resource(Posts, '/post')
+app.register_blueprint(bp_post, url_prefix='/post')
 api.add_resource(Post, '/post/<int:pid>')
 api.add_resource(Search, '/search')
 

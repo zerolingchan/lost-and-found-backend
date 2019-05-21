@@ -50,8 +50,9 @@ class PaginationForm(BaseForm):
     per_page = IntegerField('per page num', validators=[Optional()], default=20)
 
 
-class CommentForm(PaginationForm):
+class CommentForm(BaseForm):
     post_id = IntegerField('post id', validators=[DataRequired()])
+    content = StringField('content', validators=[Optional()])
 
 
 class NoticeForm(BaseForm):

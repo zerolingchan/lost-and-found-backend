@@ -4,7 +4,7 @@ from flask_restful import Resource
 from flask_sqlalchemy import BaseQuery
 
 from app import db
-from app.forms import CommentForm
+from app.forms import CommentForm, PaginationForm
 from app.model.comment import CommentModel
 
 
@@ -14,11 +14,11 @@ class Comments(Resource):
         获得所有留言
         :return:
         """
-        post_id = request.values.get('pid')
-        form = CommentForm(meta=dict(csrf=False))
+        comment_form = CommentForm(meta=dict(csrf=False))
+        paginate_form = PaginationForm(meta=dict(csrf=False))
 
-        query: BaseQuery = CommentModel.query.filter_by(post_id=post_id)
-        pagination = query.paginate(page=form.page.name, per_page=form.per_page.data)
+        query: BaseQuery = CommentModel.query.filter_by(post_id=comment_form.post_id.data)
+        pagination = query.paginate(page=paginate_form.page.data, per_page=paginate_form.per_page.data)
 
         return dict(
             code=200,
@@ -36,8 +36,8 @@ class Comments(Resource):
 
     @login_required
     def post(self):
-        content = request.form['content']
-        m = CommentModel.new(user_id=current_user.id, content=content)
+        comment_form = CommentForm(meta=dict(csrf=False))
+        m = CommentModel.new(user_id=current_user.id, **comment_form.form)
         return dict(code=200, msg='success', data=m.asdict())
 
 

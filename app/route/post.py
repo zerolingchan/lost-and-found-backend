@@ -1,8 +1,9 @@
 import os
 import pathlib
 from math import ceil
+import logging
 
-from flask import request
+from flask import request, Blueprint
 from flask_login import login_required, current_user
 from flask_restful import Resource
 from sqlalchemy.sql import text
@@ -12,7 +13,65 @@ from app import uploader, db
 from app.forms import PostForm, PaginationForm
 from app.model import PostModel
 from app.permission import Role
-from app.util import hash_filename
+from app.util import hash_filename, json_response
+
+
+bp_post = Blueprint('post user', __name__)
+_logger = logging.getLogger(__name__)
+
+
+@bp_post.route('/user', methods=['GET'])
+@login_required
+@json_response
+def user_post():
+    pagination_form = PaginationForm(meta=dict(csrf=False))
+    type = request.values.get('type')
+    if not type:
+        return dict(code=400, msg='error params', data=None)
+
+    # 由于需要通过子查询当前用户是否点赞，稍微复杂，因此不用orm，手写sql
+    key = ('id', 'title', 'content', 'contact', 'type', 'phone', 'image', 'updated_time', 'like')
+    sql = text("""
+SELECT
+    p.id,
+    p.title,
+    p.content,
+    p.contact,
+    p.type,
+    p.phone,
+    p.image,
+    p.updated_time,
+    IFNULL(( SELECT `status` FROM likes WHERE user_id = :user_id AND post_id = p.id), 0) AS 'like'
+FROM
+    posts p
+WHERE p.type = :type
+AND p.deleted = FALSE
+AND p.user_id = :user_id
+LIMIT :start, :per_page
+        """)
+    posts = db.engine.execute(sql, type=type,
+                              start=pagination_form.per_page.data * (pagination_form.page.data - 1),
+                              per_page=pagination_form.per_page.data,
+                              user_id=current_user.id if current_user.is_authenticated else 0,).fetchall()
+
+    current_num = len(posts)
+    if current_num < pagination_form.per_page.data:
+        total_num = len(posts)
+    else:
+        total_num = PostModel.get_query().filter_by(type=type).count()
+    return dict(
+        code=200,
+        msg='success',
+        data=dict(
+            data=[dict(zip(key, _)) for _ in posts],
+            pagination=dict(
+                current_page=pagination_form.page.data,
+                current_num=current_num,
+                total_page=ceil(total_num / pagination_form.per_page.data),
+                total_num=total_num
+            )
+        )
+    )
 
 
 class Posts(Resource):
@@ -46,7 +105,6 @@ LIMIT :start, :per_page
                                   per_page=pagination_form.per_page.data,
                                   user_id=current_user.id if current_user.is_authenticated else 0,).fetchall()
 
-        print(posts)
         current_num = len(posts)
         if current_num < pagination_form.per_page.data:
             total_num = len(posts)
@@ -72,7 +130,9 @@ LIMIT :start, :per_page
         if form.validate():
             path = ''
             try:
-                m = PostModel.new(**form.form, user_id=current_user.id, commit=False)
+                _form = form.form
+                del _form['image']  # 文件对象不能直接放数据库，类型不一致
+                m = PostModel.new(**_form, user_id=current_user.id, commit=False)
 
                 # 先flush到数据库，获得ID，下面好根据ID存储文件，但是不提交事务，方便回退
                 db.session.add(m)
@@ -86,13 +146,14 @@ LIMIT :start, :per_page
                     path = uploader.save(storage=image, folder=str(m.id), name=filename)
                     # 获得对应到文件夹路径
                     url = uploader.url(path)
-                    m.image = url
+                    m.image = 'http://198.13.50.56' + url
 
                 # 提交
                 db.session.commit()
 
                 return dict(code=200, msg='success', data=m.asdict())
             except Exception as e:
+                _logger.exception(e)
                 db.session.rollback()
                 # 删除无用附件
                 if path:
