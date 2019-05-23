@@ -213,7 +213,7 @@ AND p.deleted = FALSE
                 # 图片字段不存在时候，NoneType类型无法更新，所以先删除
                 del _form['image']
 
-                image = form.image.data
+                image = request.files.get('image')
                 if image:
                     filename = hash_filename(image.filename)
                     if not uploader.file_allowed(image, filename):
